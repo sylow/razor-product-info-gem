@@ -37,9 +37,9 @@ RSpec.describe RazorProductInfo::Client do
   context "when receiving a body" do
     let(:response_body) { '{"test": "value"}' }
 
-    it "Hashie::Mash-es the response" do
+    it "returns the response body" do
       resp = client.get("the_endpoint")
-      expect(resp.test).to eq('value')
+      expect(resp['test']).to eq('value')
     end
   end
 

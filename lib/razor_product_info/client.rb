@@ -5,11 +5,12 @@ require 'hashie'
 module RazorProductInfo
 
   class Client
-    attr_reader :connection, :auth_token
+    attr_reader :connection, :auth_token, :base_url
 
-    def initialize(auth_token: nil, base_url: RazorProductInfo::DEFAULT_BASE_URL)
+    def initialize(auth_token: RazorProductInfo.config.auth_token, base_url: RazorProductInfo.config.base_url)
       @auth_token = auth_token
-      @connection = Faraday.new(url: base_url) do |conn|
+      @base_url = base_url
+      @connection = Faraday.new(url: @base_url) do |conn|
         conn.request :json
 
         conn.response :json
@@ -28,7 +29,7 @@ module RazorProductInfo
         raise Error, r.body.fetch('error', "unknown error")
       end
 
-      Hashie::Mash.new(r.body)
+      r.body
     end
 
     def respond_to_missing?(method, include_private = false)
