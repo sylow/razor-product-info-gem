@@ -15,11 +15,11 @@ RSpec.describe RazorProductInfo::ProductInfo do
         to_return(status: response_status, body: response_body, headers: {})
     end
 
-    let(:response_body) {
+    let(:response_body) { JSON.dump(
       [
         {id: 1, name: "Test product"},
       ]
-    }
+    ) }
 
     it "calls /product_infos" do
       RazorProductInfo::ProductInfo.all

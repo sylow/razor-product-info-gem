@@ -1,10 +1,11 @@
+# TODO only require in development
+require 'pry'
+require 'awesome_print'
+
+require 'her'
+require 'ostruct'
+
 require "razor_product_info/version"
-
-require "razor_product_info/errors"
-require "razor_product_info/client"
-
-require "razor_product_info/base_model"
-require "razor_product_info/product_info"
 
 module RazorProductInfo
 
@@ -22,12 +23,8 @@ module RazorProductInfo
   end
   reset_config!
 
-
-  def self.global_client
-    @@global_client ||= Client.new
-  end
-  def self.reset_global_client!
-    @@global_client = nil
-  end
-
 end
+
+require "razor_product_info/api"
+require "razor_product_info/base_model"
+require "razor_product_info/product_info"

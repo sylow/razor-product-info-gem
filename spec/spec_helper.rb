@@ -13,7 +13,6 @@ RSpec.configure do |config|
 
   config.before(:each) do
     RazorProductInfo.reset_config!
-    RazorProductInfo.reset_global_client!
   end
 
 end
