@@ -1,12 +1,13 @@
 require 'razor_product_info/token_authentication'
+require 'faraday_middleware'
 
 module RazorProductInfo
 
   Api = Her::API.new
-  puts RazorProductInfo.config.base_url
-  Api.setup url: RazorProductInfo.config.base_url do |c|
+  Api.setup url: "#{RazorProductInfo.config.host}/api/v#{RazorProductInfo.config.version}/" do |c|
     # Request
     c.use RazorProductInfo::TokenAuthentication
+    c.use FaradayMiddleware::EncodeJson
 
     # Response
     c.use Her::Middleware::DefaultParseJSON
