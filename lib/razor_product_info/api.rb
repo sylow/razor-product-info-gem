@@ -4,16 +4,19 @@ require 'faraday_middleware'
 module RazorProductInfo
 
   Api = Her::API.new
-  Api.setup url: "#{RazorProductInfo.config.host}/api/v#{RazorProductInfo.config.version}/" do |c|
-    # Request
-    c.use RazorProductInfo::TokenAuthentication
-    c.use FaradayMiddleware::EncodeJson
 
-    # Response
-    c.use Her::Middleware::DefaultParseJSON
+  def self.setup_api!
+    Api.setup url: "#{RazorProductInfo.config.host}/api/v#{RazorProductInfo.config.version}/" do |c|
+      # Request
+      c.use RazorProductInfo::TokenAuthentication
+      c.use FaradayMiddleware::EncodeJson
 
-    # Adapter
-    c.use Faraday::Adapter::NetHttp
+      # Response
+      c.use Her::Middleware::DefaultParseJSON
+
+      # Adapter
+      c.use Faraday::Adapter::NetHttp
+    end
   end
 
 end

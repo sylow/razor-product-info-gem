@@ -11,13 +11,13 @@ RSpec.describe RazorProductInfo::ProductInfo do
 
   describe ".all" do
     before do
-      stub_request(:get, "#{base_url}product_infos").
+      stub_request(:get, "#{base_url}product_info").
         to_return(status: response_status, body: response_body, headers: {})
     end
 
     let(:response_body) { JSON.dump(
       [
-        {id: 1, name: "Test product"},
+        {id: 1, description: "Test product"},
       ]
     ) }
 
@@ -28,7 +28,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
 
     it "returns all ProductInfos" do
       info = RazorProductInfo::ProductInfo.all.first
-      expect(info.name).to eq("Test product")
+      expect(info.description).to eq("Test product")
       expect(info.id).to eq(1)
     end
   end
@@ -40,7 +40,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
     end
 
     let(:response_body) {
-      JSON.dump({id: 1, name: "Test product"})
+      JSON.dump({id: 1, description: "Test product"})
     }
 
     it "calls /product_infos/1" do
@@ -50,7 +50,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
 
     it "returns all ProductInfos" do
       info = RazorProductInfo::ProductInfo.find(1)
-      expect(info.name).to eq("Test product")
+      expect(info.description).to eq("Test product")
       expect(info.id).to eq(1)
     end
   end
