@@ -2,6 +2,8 @@ require 'spec_helper'
 
 RSpec.describe RazorProductInfo::ProductInfo do
 
+  before(:each) { RazorProductInfo::ProductInfo.reset_cache! }
+
   let(:response_status) { 200 }
   let(:response_body) { "" }
 
@@ -96,6 +98,16 @@ RSpec.describe RazorProductInfo::ProductInfo do
       )
     end
 
+
+    describe ".reset_cache!" do
+      it "updates the cache" do
+        RazorProductInfo::ProductInfo.find_by_upc("upc2")
+        RazorProductInfo::ProductInfo.reset_cache!
+        RazorProductInfo::ProductInfo.find_by_upc("upc2")
+        expect(a_request(:get, "https://example.com/api/v1/product_info")).to have_been_made.twice
+      end
+    end
   end
+
 
 end
