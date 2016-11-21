@@ -61,7 +61,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
 
     let(:response_body) { JSON.dump(
       [
-        {id: 1, sku: "SKU1", upc: "UPC1", description: "Test product1"},
+        {id: 1, sku: "SKU1", description: "Test product1"},
         {id: 2, sku: "SKU2", upc: "UPC2", description: "Test product2"},
       ]
     ) }

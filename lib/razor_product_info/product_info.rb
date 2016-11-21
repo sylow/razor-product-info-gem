@@ -39,7 +39,9 @@ module RazorProductInfo
         end
 
         def all_by_upc
-          @@_all_by_upc ||= all_cached.map {|i| [i.upc.downcase, i] }.to_h
+          @@_all_by_upc ||= all_cached.map {|i|
+            i.upc && i.upc.present? && [i.upc.downcase, i]
+          }.compact.to_h
         end
       end
 
