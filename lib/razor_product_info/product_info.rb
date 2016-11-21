@@ -1,5 +1,3 @@
-require 'memoist'
-
 module RazorProductInfo
 
   class ProductInfo < BaseModel
