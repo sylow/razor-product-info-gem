@@ -1,36 +1,39 @@
 # RazorProductInfo
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/razor_product_info`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Client library for the Razor product info service.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'razor_product_info'
+gem 'razor_product_info', git: 'https://dca1bade220658a66ebcbd133fd6978cd0c2b6fb@github.com/27183/razor-product-info-gem.git'
 ```
 
-And then execute:
+And execute:
 
     $ bundle
 
-Or install it yourself as:
+You need to create an initializer to configure the API, e.g. `config/initializers/razor_product_info.rb`:
 
-    $ gem install razor_product_info
+    RazorProductInfo.configure do |conf|
+      conf.host       = "https://razor-product-info.herokuapp.com" # default
+      conf.version    = 1 # default
+      conf.auth_token = ENV['razor_product_info_token']
+    end
+
+You can obtain an API token by running
+
+    heroku run rake api:generate_token -a razor-product-info
 
 ## Usage
 
-TODO: Write usage instructions here
+#### `RazorProductInfo::ProductInfo.all`
+Returns all products.
 
-## Development
+#### `RazorProductInfo::ProductInfo.find(id)`
+Finds a product by ID (not SKU!).
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/razor_product_info.
-
+#### `RazorProductInfo::ProductInfo.find_by_sku(sku)`
+#### `RazorProductInfo::ProductInfo.find_by_upc(upc)`
+Finds a product by SKU or UPC. The first time one of these methods is called, all products are fetched from the server and cached. To clear the cache, call `RazorProductInfo::ProductInfo.reset_cache!`
