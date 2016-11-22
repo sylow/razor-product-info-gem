@@ -29,6 +29,30 @@ RSpec.describe RazorProductInfo::ProductInfo do
       expect(info.description).to eq("Test product")
       expect(info.id).to eq(1)
     end
+
+
+    context "when not authenticated" do
+      before do
+        stub_request(:get, "https://example.com/api/v1/product_info").
+          to_return(status: 401, body: '{}')
+      end
+
+      it "raises RazorProductInfo::Unauthorized" do
+        expect { RazorProductInfo::ProductInfo.all.first }.to raise_error(RazorProductInfo::Unauthorized)
+      end
+    end
+
+    context "on server error" do
+      before do
+        stub_request(:get, "https://example.com/api/v1/product_info").
+          to_return(status: 500 + rand(100))
+      end
+
+      it "raises RazorProductInfo::ServerError" do
+        expect { RazorProductInfo::ProductInfo.all.first }.to raise_error(RazorProductInfo::ServerError)
+      end
+    end
+
   end
 
   describe ".find" do

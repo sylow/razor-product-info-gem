@@ -6,6 +6,7 @@ require 'her'
 require 'ostruct'
 
 require "razor_product_info/version"
+require "razor_product_info/errors"
 
 require "razor_product_info/api"
 require "razor_product_info/base_model"
