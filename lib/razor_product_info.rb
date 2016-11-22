@@ -1,6 +1,5 @@
-# TODO only require in development
-require 'pry'
-require 'awesome_print'
+#require 'pry'
+#require 'awesome_print'
 
 require 'her'
 require 'ostruct'
