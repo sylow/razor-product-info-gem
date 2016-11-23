@@ -33,13 +33,13 @@ module RazorProductInfo
         end
 
         def all_by_sku
-          @@_all_by_sku ||= all_cached.map {|i| [i.sku.downcase, i] }.to_h
+          @@_all_by_sku ||= Hash[all_cached.map {|i| [i.sku.downcase, i] }]
         end
 
         def all_by_upc
-          @@_all_by_upc ||= all_cached.map {|i|
+          @@_all_by_upc ||= Hash[all_cached.map {|i|
             i.upc && i.upc.present? && [i.upc.downcase, i]
-          }.compact.to_h
+          }.compact]
         end
       end
 
