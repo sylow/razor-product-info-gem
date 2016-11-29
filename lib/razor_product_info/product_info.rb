@@ -17,21 +17,20 @@ module RazorProductInfo
       return find_by_upc(upc.gsub(/^0+/, '')) if upc =~ /^0+/
     end
 
+    def self.all_cached
+      @@_all_cached ||= all.to_a
+    end
 
     def self.reset_cache!
       @@_all_cached = nil
       @@_all_by_sku = nil
       @@_all_by_upc = nil
     end
-    reset_cache!
+    reset_cache! # init class variables
 
     private
 
       class << self
-        def all_cached
-          @@_all_cached ||= all.to_a
-        end
-
         def all_by_sku
           @@_all_by_sku ||= Hash[all_cached.map {|i| [i.sku.downcase, i] }]
         end

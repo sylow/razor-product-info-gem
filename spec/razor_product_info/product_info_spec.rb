@@ -77,7 +77,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
     end
   end
 
-  describe ".find_by_(sku|upc)" do
+  describe "search methods" do
     before do
       stub_request(:get, "https://example.com/api/v1/product_info").
         to_return(status: response_status, body: response_body, headers: {})
