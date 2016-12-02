@@ -1,7 +1,12 @@
+require 'concurrent'
+
 module RazorProductInfo
 
   class ProductInfo < BaseModel
     collection_path 'product_info'
+
+    @@all_cache = Concurrent::Map.new
+    @@derived_cache = Concurrent::Map.new
 
     def self.find_by_sku(sku)
       return nil unless sku.present?
@@ -18,27 +23,49 @@ module RazorProductInfo
     end
 
     def self.all_cached
-      @@_all_cached ||= all.to_a
+      @@all_cache.compute_if_absent('all') do
+        all.to_a
+      end
     end
 
     def self.reset_cache!
-      @@_all_cached = nil
-      @@_all_by_sku = nil
-      @@_all_by_upc = nil
+      @@all_cache.delete('all')
+      reset_derived_cache!
     end
-    reset_cache! # init class variables
+
+    def self.safely_refresh_cache!(&block)
+      @@all_cache.compute('all') do
+        all.to_a.tap do |a|
+          raise "API returned no product infos" if a.empty?
+          reset_derived_cache!
+        end
+      end
+    rescue => e
+      yield e if block_given?
+    end
 
     private
 
       class << self
         def all_by_sku
-          @@_all_by_sku ||= Hash[all_cached.map {|i| [i.sku.downcase, i] }]
+          @@derived_cache.compute_if_absent('all_by_sku') do
+            Hash[all_cached.map {|i| [i.sku.downcase, i] }]
+          end
         end
 
         def all_by_upc
-          @@_all_by_upc ||= Hash[all_cached.map {|i|
-            i.upc && i.upc.present? && [i.upc.downcase, i]
-          }.compact]
+          @@derived_cache.compute_if_absent('all_by_upc') do
+            Hash[
+              all_cached.map {|i|
+                i.upc && i.upc.present? && [i.upc.downcase, i]
+              }.compact
+            ]
+          end
+        end
+
+        def reset_derived_cache!
+          @@derived_cache.delete('all_by_sku')
+          @@derived_cache.delete('all_by_upc')
         end
       end
 

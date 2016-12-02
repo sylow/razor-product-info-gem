@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
   # TODO figure out minimum version requirements
   spec.add_dependency "her", "0.8.1"
   spec.add_dependency "faraday_middleware"
+  spec.add_dependency "concurrent-ruby"
 end

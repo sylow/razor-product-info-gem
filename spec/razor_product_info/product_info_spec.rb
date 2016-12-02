@@ -32,10 +32,8 @@ RSpec.describe RazorProductInfo::ProductInfo do
 
 
     context "when not authenticated" do
-      before do
-        stub_request(:get, "https://example.com/api/v1/product_info").
-          to_return(status: 401, body: '{}')
-      end
+      let(:response_status) { 401 }
+      let(:response_body) { '{}' }
 
       it "raises RazorProductInfo::Unauthorized" do
         expect { RazorProductInfo::ProductInfo.all.first }.to raise_error(RazorProductInfo::Unauthorized)
@@ -43,10 +41,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
     end
 
     context "on server error" do
-      before do
-        stub_request(:get, "https://example.com/api/v1/product_info").
-          to_return(status: 500 + rand(100))
-      end
+      let(:response_status) { 500 + rand(100) }
 
       it "raises RazorProductInfo::ServerError" do
         expect { RazorProductInfo::ProductInfo.all.first }.to raise_error(RazorProductInfo::ServerError)
@@ -131,6 +126,43 @@ RSpec.describe RazorProductInfo::ProductInfo do
         expect(a_request(:get, "https://example.com/api/v1/product_info")).to have_been_made.twice
       end
     end
+
+    describe ".safely_refresh_cache!" do
+      def stub_req!(status, body)
+        stub_request(:get, "https://example.com/api/v1/product_info").
+          to_return(status: status, body: body, headers: {})
+      end
+
+      before do
+        stub_req!(200, JSON.dump([{id: 1, sku: "SKU1", description: "Test product1"}]))
+        RazorProductInfo::ProductInfo.all_cached
+      end
+
+      it "leaves old cache intact when API call fails" do
+        stub_req!(500, "")
+        expect { RazorProductInfo::ProductInfo.safely_refresh_cache! }.
+          not_to change(RazorProductInfo::ProductInfo, :all_cached)
+      end
+
+      it "yields the error when API call fails" do
+        stub_req!(500, "")
+        expect { |block| RazorProductInfo::ProductInfo.safely_refresh_cache!(&block) }.
+          to yield_with_args(StandardError)
+      end
+
+      it "leaves old cache intact when API returns empty result" do
+        stub_req!(200, "[]")
+        expect { RazorProductInfo::ProductInfo.safely_refresh_cache! }.
+          not_to change(RazorProductInfo::ProductInfo, :all_cached)
+      end
+
+      it "updates cache when API call succeeds" do
+        stub_req!(200, JSON.dump([{id: 1, sku: "SKU1", description: "New desc"}]))
+        expect { RazorProductInfo::ProductInfo.safely_refresh_cache! }.
+          to change { RazorProductInfo::ProductInfo.all_cached.first.description }.to "New desc"
+      end
+    end
+
   end
 
 
