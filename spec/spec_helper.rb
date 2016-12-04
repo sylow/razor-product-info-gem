@@ -16,6 +16,8 @@ RSpec.configure do |config|
       c.host = "https://example.com"
       c.version = 1
       c.auth_token = nil
+
+      c.cache_refresh_interval = nil
     end
   end
 
