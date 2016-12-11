@@ -10,16 +10,12 @@ module RazorProductInfo
 
     def self.find_by_sku(sku)
       return nil unless sku.present?
-      all_by_sku[sku.downcase]
+      all_by_sku[transform_sku_for_search(sku)]
     end
 
     def self.find_by_upc(upc)
       return nil unless upc.present?
-
-      info = all_by_upc[upc.downcase]
-      return info if info
-
-      return find_by_upc(upc.gsub(/^0+/, '')) if upc =~ /^0+/
+      all_by_upc[transform_upc_for_search(upc)]
     end
 
     def self.all_cached
@@ -49,7 +45,7 @@ module RazorProductInfo
       class << self
         def all_by_sku
           @@derived_cache.compute_if_absent('all_by_sku') do
-            Hash[all_cached.map {|i| [i.sku.downcase, i] }]
+            Hash[all_cached.map {|i| [transform_sku_for_search(i.sku), i] }]
           end
         end
 
@@ -57,11 +53,26 @@ module RazorProductInfo
           @@derived_cache.compute_if_absent('all_by_upc') do
             Hash[
               all_cached.map {|i|
-                i.upc && i.upc.present? && [i.upc.downcase, i]
+                upc = transform_upc_for_search(i.upc)
+                upc && [upc, i]
               }.compact
             ]
           end
         end
+
+
+        def transform_sku_for_search(sku)
+          return nil unless sku && sku.present?
+          sku.strip.downcase
+        end
+
+        def transform_upc_for_search(upc)
+          return nil unless upc && upc.present?
+          upc.strip.downcase.
+            gsub('-', '').
+            sub(/^0+/, '')
+        end
+
 
         def reset_derived_cache!
           @@derived_cache.delete('all_by_sku')

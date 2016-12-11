@@ -81,7 +81,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
     let(:response_body) { JSON.dump(
       [
         {id: 1, sku: "SKU1", description: "Test product1"},
-        {id: 2, sku: "SKU2", upc: "UPC2", description: "Test product2"},
+        {id: 2, sku: "SKU2", upc: "UPC-2", description: "Test product2"},
       ]
     ) }
 
@@ -104,7 +104,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
     it "returns the correct ProductInfo by case insensitive UPC" do
       expect(RazorProductInfo::ProductInfo.find_by_upc("Upc2").attributes).to match(
         a_hash_including(
-          upc: "UPC2", description: "Test product2"
+          upc: "UPC-2", description: "Test product2"
         )
       )
     end
@@ -112,7 +112,15 @@ RSpec.describe RazorProductInfo::ProductInfo do
     it "returns the correct ProductInfo by UPC with leading zeroes" do
       expect(RazorProductInfo::ProductInfo.find_by_upc("00Upc2").attributes).to match(
         a_hash_including(
-          upc: "UPC2", description: "Test product2"
+          upc: "UPC-2", description: "Test product2"
+        )
+      )
+    end
+
+    it "returns the correct ProductInfo by UPC with arbitrary dashes" do
+      expect(RazorProductInfo::ProductInfo.find_by_upc("U-p-c2").attributes).to match(
+        a_hash_including(
+          upc: "UPC-2", description: "Test product2"
         )
       )
     end
