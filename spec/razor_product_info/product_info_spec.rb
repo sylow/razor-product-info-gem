@@ -82,6 +82,7 @@ RSpec.describe RazorProductInfo::ProductInfo do
       [
         {id: 1, sku: "SKU1", description: "Test product1"},
         {id: 2, sku: "SKU2", upc: "UPC-2", description: "Test product2"},
+        {id: 3, sku: "SKU3", upc: "845423018405", description: "Walmart.com product"},
       ]
     ) }
 
@@ -121,6 +122,14 @@ RSpec.describe RazorProductInfo::ProductInfo do
       expect(RazorProductInfo::ProductInfo.find_by_upc("U-p-c2").attributes).to match(
         a_hash_including(
           upc: "UPC-2", description: "Test product2"
+        )
+      )
+    end
+
+    it "returns the correct ProductInfo by UPC from Walmart.com" do
+      expect(RazorProductInfo::ProductInfo.find_by_wmcom_upc("0084542301840").attributes).to match(
+        a_hash_including(
+          upc: "845423018405", description: "Walmart.com product"
         )
       )
     end

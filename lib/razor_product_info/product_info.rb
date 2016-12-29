@@ -18,6 +18,11 @@ module RazorProductInfo
       all_by_upc[transform_upc_for_search(upc)]
     end
 
+    def self.find_by_wmcom_upc(upc)
+      return nil unless upc.present?
+      all_by_wmcom_upc[transform_upc_for_search(upc)]
+    end
+
     def self.all_cached
       @@all_cache.compute_if_absent('all') do
         all.to_a
@@ -55,6 +60,17 @@ module RazorProductInfo
               all_cached.map {|i|
                 upc = transform_upc_for_search(i.upc)
                 upc && [upc, i]
+              }.compact
+            ]
+          end
+        end
+
+        def all_by_wmcom_upc
+          @@derived_cache.compute_if_absent('all_by_wmcom_upc') do
+            Hash[
+              all_cached.map {|i|
+                upc = transform_upc_for_search(i.upc)
+                upc && [upc[0..-2], i]
               }.compact
             ]
           end
