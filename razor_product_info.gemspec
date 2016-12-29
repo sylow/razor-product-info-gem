@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "webmock"
   spec.add_development_dependency "awesome_print"
   spec.add_development_dependency "pry"
+  spec.add_development_dependency "guard-rspec"
 
   # TODO figure out minimum version requirements
   spec.add_dependency "her", "0.8.1"
