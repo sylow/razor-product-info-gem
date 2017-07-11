@@ -8,7 +8,7 @@ module RazorProductInfo
     stop_refresh_task!
     return unless config.cache_refresh_interval
 
-    @@refresh_task = Concurrent::TimerTask.new(run_now: true) do
+    @@refresh_task = Concurrent::TimerTask.new(run_now: false) do
       ProductInfo.safely_refresh_cache!(&config.on_cache_refresh_error)
     end
 
